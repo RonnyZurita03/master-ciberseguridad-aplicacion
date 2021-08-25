@@ -1,48 +1,22 @@
-from flask import Flask, Response
-import requests
-import json
+from flask import Flask
+from flask import render_template
+from flask import request
 
+from flask import Flask, redirect, url_for, request
 app = Flask(__name__)
 
-@app.route("/")
-def hello_world():
-    return "<p>Master Ciberseguridad Zurita</p>"
+@app.route('/dashboard/<name>')
+def dashboard(name):
+   return 'welcome %s' % name
 
-@app.route("/catfact")
-def catfact():
-
-    url = "https://catfact.ninja/fact"
-    r = requests.get(url)
-    fact = r.json()
-    printable_fact = fact['fact']
-    #print to console
-    print("Did you know?: " + printable_fact)
-    return Response(json.dumps(fact))
-
-@app.route("/get-price/<ticker>")
-def get_price(ticker):
-    url = f"https://query2.finance.yahoo.com/v10/finance/quoteSummary/{ticker}?modules=price%2CsummaryDetail%2CpageViews%2CfinancialsTemplate"
-    headers={'User-Agent': 'Mozilla/5.0'}
-    response = requests.get(url,headers=headers)
-    company_info = response.json()
-
-    print(company_info)
-
-    price = company_info['quoteSummary']['result'][0]['price']['regularMarketPrice']['raw']
-    company_name = company_info['quoteSummary']['result'][0]['price']['longName']
-    exchange = company_info['quoteSummary']['result'][0]['price']['exchangeName']
-    currency = company_info['quoteSummary']['result'][0]['price']['currency']
-
-    result = {
-        "price": price,
-        "name": company_name,
-        "exchange": exchange,
-        "currency": currency
-    }
-    print(result)
-
-    return Response(json.dumps(result))
+@app.route('/login',methods = ['POST', 'GET'])
+def login():
+   if request.method == 'POST':
+      user = request.form['name']
+      return redirect(url_for('dashboard',name = user))
+   else:
+      user = request.args.get('name')
+      return render_template('login.html')
 
 if __name__ == '__main__':
-    app.run()
-    
+   app.run(debug = True)
