@@ -1,13 +1,14 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
+
 name: Python application
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build:
@@ -34,4 +35,10 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
-
+    - uses: akhileshns/heroku-deploy@v3.12.12
+      with:
+        heroku_api_key: ${{secrets.HEROKU_API_RONNY}}
+        heroku_app_name: "ronnyreto1"
+        heroku_email:  ${{secrets.HEROKU_EMAIL}}
+        buildpack: 'heroku/python'
+        usedocker: false
